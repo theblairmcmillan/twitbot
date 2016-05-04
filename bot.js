@@ -1,4 +1,4 @@
-console.log('The follow bot is starting');
+console.log('The bot is starting');
 
 var Twit = require('twit');
 
@@ -19,12 +19,32 @@ function followed(eventMsg) {
 }
 
 
+// handling replies to twitter bot //
+stream.on('tweet', tweetEvent);
+
+function tweetEvent(eventMsg) {
+	// var fs = require('fs');
+	// var json = JSON.stringify(eventMsg,null,2);
+	// fs.writeFile("tweet.json", json);
+	var replyto = eventMsg.in_reply_to_screen_name;
+	var text = eventMsg.text;
+	var from = eventMsg.user.screen_name;
+	console.log(replyto + ' ' + from);
+
+	if(replyto === "OprahGiffrey") {
+		var newtweet = '@' + from + 'send bread!';
+		tweetIt(newtweet);
+	}
+}
+
+// calling tweetIt and setting interval to one day// 
 tweetIt();
 setInterval(tweetIt, 1000*60*60*24);
 console.log("getting to tweet it repeat");
 
-function tweetIt() {
+function tweetIt(text) {
 
+	// generating random number to identify each tweet//
 	var r = Math.floor(Math.random()*100);
 
 	var tweet = {
