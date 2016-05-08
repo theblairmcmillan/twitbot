@@ -1,6 +1,7 @@
 console.log('The bot is starting');
 
 var Twit = require('twit');
+var giphy = require('giphy-api')();
 var config = require('./config');
 var T = new Twit(config);
 // Setting up a user stream
@@ -37,19 +38,26 @@ function dailyTweet() {
 
 function tweetIt(txt) {
 
-	var tweet = {
-	  status: txt
-	};
+	// giphy // 
+	giphy.random('oprah').then(function(res){
+		console.log("giphy direct url",res.data.image_original_url);
+		var currentGiphy = res.data.image_original_url;
 
-	T.post('statuses/update', tweet, tweeted);
+		var tweet = {
+		  status: txt,
+		  media: currentGiphy
+		};
 
-	function tweeted(err, data, response) {
-	  if (err) {
-	  	console.log("Something went wrong!");
-	  } else {
-	    console.log("It worked!");
-	  }
-	}
+		T.post('statuses/update', tweet, tweeted);
+
+		function tweeted(err, data, response) {
+		  if (err) {
+		  	console.log("Something went wrong!");
+		  } else {
+		    console.log("It worked!");
+		  }
+		}
+	});
 };
 
 // Anytime someone follows me
@@ -61,4 +69,21 @@ stream.on('tweet', tweetEvent);
 dailyTweet();
 setInterval(dailyTweet, 1000*60*60*24);
 console.log("getting to tweet it set interval function");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
