@@ -3,6 +3,7 @@ console.log('The bot is starting');
 var Twit = require('twit');
 var giphy = require('giphy-api')();
 var config = require('./config');
+var fs = require('fs');
 var T = new Twit(config);
 // Setting up a user stream
 var stream = T.stream('user');
@@ -15,7 +16,6 @@ function followed(eventMsg) {
 };
 
 function tweetEvent(eventMsg) {
-	var fs = require('fs');
 	var json = JSON.stringify(eventMsg,null,2);
 	// fs.writeFile("tweet.json", json);
 	var replyto = eventMsg.in_reply_to_screen_name;
@@ -36,26 +36,39 @@ function dailyTweet() {
 	tweetIt(status);
 }
 
-function tweetIt(txt) {
 
+
+function tweetIt(txt) {
 	// giphy // 
 	giphy.random('oprah').then(function(res){
 		console.log("giphy direct url",res.data.image_original_url);
 		var currentGiphy = res.data.image_original_url;
 
-		var tweet = {
-		  status: txt,
-		  media: currentGiphy
-		};
+	  	var params = {
+	    	encoding: 'base64'
+	  	}
+	    var b64 = fs.readFileSync(currentGiphy, params);
+	    console.log(b64);
 
-		T.post('statuses/update', tweet, tweeted);
+	    T.post('media/upload', { media_data: b64 }, uploaded);
+
+	    function uploaded(err, data, response) {
+	    	console.log("got to uploaded function");
+			var id = data.media_id_string;
+			var tweet = {
+				status: txt,
+				media_ids: [id]
+			}
+			T.post('statuses/update', tweet, tweeted);
+	    }
 
 		function tweeted(err, data, response) {
-		  if (err) {
-		  	console.log("Something went wrong!");
-		  } else {
-		    console.log("It worked!");
-		  }
+			console.log("got to tweeted function");
+			if (err) {
+				console.log("Something went wrong!");
+			} else {
+				console.log("It worked!");
+			}
 		}
 	});
 };
