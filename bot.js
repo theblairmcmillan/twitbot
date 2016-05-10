@@ -32,7 +32,7 @@ function tweetEvent(eventMsg) {
 
 function dailyTweet() {
 	// generating random number to identify each tweet//
-	var r = Math.floor(Math.random()*100);
+	// var r = Math.floor(Math.random()*100);
 	var status = "bread bread bread! I love bread!";
 	tweetIt(status);
 }
