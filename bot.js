@@ -13,7 +13,7 @@ function followed(eventMsg) {
   console.log("Follow event!");
   var name = eventMsg.source.name;
   var screenName = eventMsg.source.screen_name;
-  tweetIt('.@' + screenName + ' I love bread');
+  tweetIt('.@' + screenName + ' I love bread!');
 };
 
 function tweetEvent(eventMsg) {
@@ -25,7 +25,7 @@ function tweetEvent(eventMsg) {
 	console.log(replyto + ' ' + from);
 
 	if(replyto === "OprahGiffrey") {
-		var newtweet = '@' + from + ' send bread!';
+		var newtweet = '@' + from + ' Send bread!';
 		tweetIt(newtweet);
 	}
 };
@@ -33,7 +33,7 @@ function tweetEvent(eventMsg) {
 function dailyTweet() {
 	// generating random number to identify each tweet//
 	var r = Math.floor(Math.random()*100);
-	var status = "bread bread bread" + r;
+	var status = "bread bread bread! I love bread!";
 	tweetIt(status);
 }
 
@@ -41,6 +41,7 @@ function dailyTweet() {
 
 function tweetIt(txt) {
 	// giphy // 
+	// getting a gif from giphy then saving it as base64 and sending it to twitter //
 	giphy.random('oprah').then(function(res){
 		console.log("giphy direct url",res.data.image_original_url);
 		var currentGiphy = res.data.image_original_url;
@@ -70,7 +71,7 @@ function tweetIt(txt) {
 					var params = { status: txt, media_ids: [mediaIdStr] }
 
 	      			T.post('statuses/update', params, function (err, data, response) {
-	        			console.log("tweeted a gif of Oprah")
+	        			console.log("tweeted a gif of Oprah.Oh yeah!")
 	      			})
 	    		}
 	  		})
@@ -96,21 +97,3 @@ stream.on('tweet', tweetEvent);
 dailyTweet();
 setInterval(dailyTweet, 1000*60*60*24);
 console.log("getting to tweet it set interval function");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
