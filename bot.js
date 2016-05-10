@@ -5,6 +5,7 @@ var giphy = require('giphy-api')();
 var config = require('./config');
 var fs = require('fs');
 var T = new Twit(config);
+request = require('request');
 // Setting up a user stream
 var stream = T.stream('user');
 
@@ -44,10 +45,7 @@ function tweetIt(txt) {
 		console.log("giphy direct url",res.data.image_original_url);
 		var currentGiphy = res.data.image_original_url;
 
-    	request = require('request');
-
 		var download = function(uri, filename, callback){
-
 		  	request.head(uri, function(err, res, body){
 		    console.log('content-type:', res.headers['content-type']);
 		    console.log('content-length:', res.headers['content-length']);
@@ -68,39 +66,15 @@ function tweetIt(txt) {
 			var meta_params = {media_id: mediaIdStr, alt_text: { text: altText}}
 
 			T.post('media/metadata/create', meta_params, function (err, data, response) {
-    			if (!err) {
-      
-      			var params = { status: 'womp', media_ids: [mediaIdStr] }
+	    		if (!err) {
+					var params = { status: txt, media_ids: [mediaIdStr] }
 
-      		T.post('statuses/update', params, function (err, data, response) {
-        	console.log("fucking tweeting a gif")
-      })
-    }
-  })
-})
-
-
-
-
-
-
-	  // 	var params = {
-	  //   	encoding: 'base64'
-	  // 	}
-	  //   var b64 = fs.readFileSync(currentGiphy, params);
-	  //   console.log(b64);
-
-	  //   T.post('media/upload', { media_data: b64 }, uploaded);
-
-	  //   function uploaded(err, data, response) {
-	  //   	console.log("got to uploaded function");
-			// var id = data.media_id_string;
-			// var tweet = {
-			// 	status: txt,
-			// 	media_ids: [id]
-			// }
-			// T.post('statuses/update', tweet, tweeted);
-	    // })
+	      			T.post('statuses/update', params, function (err, data, response) {
+	        			console.log("tweeted a gif of Oprah")
+	      			})
+	    		}
+	  		})
+		})
 
 		function tweeted(err, data, response) {
 			console.log("got to tweeted function");
