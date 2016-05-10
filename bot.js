@@ -44,23 +44,63 @@ function tweetIt(txt) {
 		console.log("giphy direct url",res.data.image_original_url);
 		var currentGiphy = res.data.image_original_url;
 
-	  	var params = {
-	    	encoding: 'base64'
-	  	}
-	    var b64 = fs.readFileSync(currentGiphy, params);
-	    console.log(b64);
+    	request = require('request');
 
-	    T.post('media/upload', { media_data: b64 }, uploaded);
+		var download = function(uri, filename, callback){
 
-	    function uploaded(err, data, response) {
-	    	console.log("got to uploaded function");
-			var id = data.media_id_string;
-			var tweet = {
-				status: txt,
-				media_ids: [id]
-			}
-			T.post('statuses/update', tweet, tweeted);
-	    }
+		  	request.head(uri, function(err, res, body){
+		    console.log('content-type:', res.headers['content-type']);
+		    console.log('content-length:', res.headers['content-length']);
+		    var r = request(uri).pipe(fs.createWriteStream(filename));
+		    r.on('close', callback);
+		    });
+		};
+
+		download(currentGiphy, 'currentGif', function(){
+		    console.log('Done downloading..');
+		});
+
+		var b64content = fs.readFileSync('currentGif', { encoding: 'base64' })
+
+		T.post('media/upload', {media_data: b64content }, function (err, data, response) {
+			var mediaIdStr = data.media_id_string
+			var altText = "This should be a gif of Oprah!"
+			var meta_params = {media_id: mediaIdStr, alt_text: { text: altText}}
+
+			T.post('media/metadata/create', meta_params, function (err, data, response) {
+    			if (!err) {
+      
+      			var params = { status: 'womp', media_ids: [mediaIdStr] }
+
+      		T.post('statuses/update', params, function (err, data, response) {
+        	console.log("fucking tweeting a gif")
+      })
+    }
+  })
+})
+
+
+
+
+
+
+	  // 	var params = {
+	  //   	encoding: 'base64'
+	  // 	}
+	  //   var b64 = fs.readFileSync(currentGiphy, params);
+	  //   console.log(b64);
+
+	  //   T.post('media/upload', { media_data: b64 }, uploaded);
+
+	  //   function uploaded(err, data, response) {
+	  //   	console.log("got to uploaded function");
+			// var id = data.media_id_string;
+			// var tweet = {
+			// 	status: txt,
+			// 	media_ids: [id]
+			// }
+			// T.post('statuses/update', tweet, tweeted);
+	    // })
 
 		function tweeted(err, data, response) {
 			console.log("got to tweeted function");
